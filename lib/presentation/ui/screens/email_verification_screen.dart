@@ -1,5 +1,7 @@
+import 'package:ecommerce/presentation/ui/screens/otp_verification_screen.dart';
 import 'package:ecommerce/presentation/ui/widgets/app_logo_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   const EmailVerificationScreen({super.key});
@@ -20,8 +22,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              const SizedBox(height: 82),
+              const SizedBox(height: 80),
               const AppLogoWidget(),
+              const SizedBox(height: 24),
               Text(
                 "Welcome Back",
                 style: Theme.of(context).textTheme.headlineLarge,
@@ -40,7 +43,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: _onTapNextButton,
                 child: const Text("Next"),
               ),
             ],
@@ -48,6 +51,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         ),
       ),
     );
+  }
+
+  void _onTapNextButton() {
+    Get.to(() => const OtpVerificationScreen());
   }
 
   @override
