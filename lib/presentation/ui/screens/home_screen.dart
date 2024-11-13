@@ -88,7 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         SectionHeader(
           title: 'Categories',
-          onTap: () {},
+          onTap: () {
+            Get.to(() => const CategoryListScreen());
+          },
         ),
         const SizedBox(height: 8),
         const SizedBox(
