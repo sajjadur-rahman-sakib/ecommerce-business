@@ -1,3 +1,4 @@
+import 'package:ecommerce/controller_binder.dart';
 import 'package:ecommerce/presentation/ui/screens/splash_screen.dart';
 import 'package:ecommerce/presentation/ui/utils/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       home: const SplashScreen(),
+      initialBinding: ControllerBinder(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorSchemeSeed: AppColors.themeColor,
