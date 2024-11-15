@@ -1,10 +1,10 @@
 import 'package:ecommerce/presentation/state_holders/bottom_nav_bar_controller.dart';
-import 'package:ecommerce/presentation/ui/widgets/category_card.dart';
+import 'package:ecommerce/presentation/ui/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CategoryListScreen extends StatelessWidget {
-  const CategoryListScreen({super.key});
+class WishlistScreen extends StatelessWidget {
+  const WishlistScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class CategoryListScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Categories'),
+          title: const Text('Wishlist'),
           leading: IconButton(
             onPressed: () {
               backToHome();
@@ -26,11 +26,15 @@ class CategoryListScreen extends StatelessWidget {
         body: GridView.builder(
           itemCount: 20,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            childAspectRatio: 0.75,
+            crossAxisCount: 3,
+            childAspectRatio: 0.7,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 8,
           ),
           itemBuilder: (context, index) {
-            return const CategoryCard();
+            return const FittedBox(
+              child: ProductCard(),
+            );
           },
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:ecommerce/presentation/state_holders/bottom_nav_bar_controller.dart';
 import 'package:ecommerce/presentation/ui/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -89,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
         SectionHeader(
           title: 'Categories',
           onTap: () {
-            Get.to(() => const CategoryListScreen());
+            Get.find<BottomNavBarController>().selectCategory();
           },
         ),
         const SizedBox(height: 8),
