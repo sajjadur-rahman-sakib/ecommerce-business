@@ -35,7 +35,7 @@ class NetworkCaller {
     } catch (e) {
       _responseLog(url, -1, null, {}, false, e);
       return NetworkResponse(
-          statusCode: -1, isSuccess: true, errorMessage: e.toString());
+          statusCode: -1, isSuccess: false, errorMessage: e.toString());
     }
   }
 
@@ -72,7 +72,7 @@ class NetworkCaller {
         );
       }
     } catch (e) {
-      _responseLog(url, -1, null, {}, true, e);
+      _responseLog(url, -1, null, {}, false, e);
       return NetworkResponse(
           statusCode: -1, isSuccess: true, errorMessage: e.toString());
     }

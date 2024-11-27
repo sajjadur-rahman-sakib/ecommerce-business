@@ -1,4 +1,5 @@
 import 'package:ecommerce/presentation/state_holders/bottom_nav_bar_controller.dart';
+import 'package:ecommerce/presentation/state_holders/slider_list_controller.dart';
 import 'package:ecommerce/presentation/ui/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -9,6 +10,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    Get.find<SliderListController>().getSliderList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
