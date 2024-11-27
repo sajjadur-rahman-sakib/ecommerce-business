@@ -1,18 +1,22 @@
+import 'package:ecommerce/data/models/category_model.dart';
 import 'package:ecommerce/presentation/ui/screens/product_list_screen.dart';
 import 'package:ecommerce/presentation/ui/widgets/widgets.dart';
 
 class CategoryCard extends StatelessWidget {
   const CategoryCard({
     super.key,
+    required this.categoryModel,
   });
+
+  final CategoryModel categoryModel;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Get.to(
-          () => const ProductListScreen(
-            categoryName: 'Electronics',
+          () => ProductListScreen(
+            categoryName: categoryModel.categoryName ?? '',
           ),
         );
       },
@@ -31,9 +35,9 @@ class CategoryCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Electronics',
-            style: TextStyle(
+          Text(
+            categoryModel.categoryName ?? '',
+            style: const TextStyle(
               color: AppColors.themeColor,
             ),
           )
