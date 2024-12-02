@@ -1,4 +1,3 @@
-import 'package:ecommerce/presentation/ui/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 
 class ProductListScreen extends StatelessWidget {
@@ -22,8 +21,8 @@ class ProductListScreen extends StatelessWidget {
         ),
         itemBuilder: (context, index) {
           return const FittedBox(
-            child: ProductCard(),
-          );
+              // child: ProductCard(),
+              );
         },
       ),
     );

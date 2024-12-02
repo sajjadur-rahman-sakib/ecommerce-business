@@ -1,5 +1,4 @@
 import 'package:ecommerce/presentation/state_holders/bottom_nav_bar_controller.dart';
-import 'package:ecommerce/presentation/ui/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -33,8 +32,8 @@ class WishlistScreen extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             return const FittedBox(
-              child: ProductCard(),
-            );
+                // child: ProductCard(),
+                );
           },
         ),
       ),
