@@ -1,12 +1,17 @@
+import 'package:ecommerce/data/models/product_details_model.dart';
+import 'package:ecommerce/presentation/state_holders/product_details_controller.dart';
 import 'package:ecommerce/presentation/ui/utils/app_colors.dart';
-import 'package:ecommerce/presentation/ui/widgets/color_picker.dart';
+import 'package:ecommerce/presentation/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:ecommerce/presentation/ui/widgets/product_image_slider.dart';
 import 'package:ecommerce/presentation/ui/widgets/size_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:item_count_number_button/item_count_number_button.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  const ProductDetailsScreen({super.key});
+  const ProductDetailsScreen({super.key, required this.productId});
+
+  final int productId;
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -14,59 +19,88 @@ class ProductDetailsScreen extends StatefulWidget {
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
+  void initState() {
+    super.initState();
+    Get.find<ProductDetailsController>().getProductDetails(widget.productId);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product Details'),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: _buildProductDetails(),
-          ),
-          _buildPriceAndAddToCartSection(),
-        ],
+      body: GetBuilder<ProductDetailsController>(
+        builder: (productDetailsController) {
+          if (productDetailsController.inProgress) {
+            return const CenteredCircularProgressIndicator();
+          }
+
+          if (productDetailsController.errorMessage != null) {
+            return Center(
+              child: Text(productDetailsController.errorMessage!),
+            );
+          }
+
+          return Column(
+            children: [
+              Expanded(
+                child: _buildProductDetails(
+                  productDetailsController.product!,
+                ),
+              ),
+              _buildPriceAndAddToCartSection(
+                productDetailsController.product!,
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildProductDetails() {
+  Widget _buildProductDetails(ProductDetailsModel productDetails) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const ProductImageSlider(),
+          ProductImageSlider(
+            sliderUrls: [
+              productDetails.img1!,
+              productDetails.img2!,
+              productDetails.img3!,
+              productDetails.img4!,
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildNameAndSpecification(),
+                _buildNameAndSpecification(productDetails),
                 const SizedBox(height: 4),
-                _buildRatingAndReview(),
+                _buildRatingAndReview(productDetails),
                 const SizedBox(height: 8),
-                ColorPicker(
-                  colors: const [
-                    Colors.red,
-                    Colors.green,
-                    Colors.blue,
-                    Colors.black,
-                    Colors.white,
-                  ],
-                  onColorSelected: (color) {},
+                // ColorPicker(
+                //   colors: const [
+                //     Colors.red,
+                //     Colors.green,
+                //     Colors.blue,
+                //     Colors.black,
+                //     Colors.white,
+                //   ],
+                //   onColorSelected: (color) {},
+                // ),
+                SizePicker(
+                  sizes: productDetails.color!.split(','),
+                  onSizeSelected: (String selectedSize) {},
                 ),
                 const SizedBox(height: 8),
                 SizePicker(
-                  sizes: const [
-                    'S',
-                    'M',
-                    'L',
-                    'XL',
-                    'XXL',
-                  ],
+                  sizes: productDetails.size!.split(','),
                   onSizeSelected: (String selectedSize) {},
                 ),
                 const SizedBox(height: 16),
-                _buildDescriptionSection(),
+                _buildDescriptionSection(productDetails),
               ],
             ),
           ),
@@ -75,7 +109,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildDescriptionSection() {
+  Widget _buildDescriptionSection(ProductDetailsModel productDetails) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -86,21 +120,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         const SizedBox(
           height: 8,
         ),
-        const Text(
-          '....................................................',
-          style: TextStyle(color: Colors.black45),
+        Text(
+          productDetails.product?.shortDes ?? '',
+          style: const TextStyle(color: Colors.black45),
         ),
       ],
     );
   }
 
-  Widget _buildNameAndSpecification() {
+  Widget _buildNameAndSpecification(ProductDetailsModel productDetails) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Text(
-            'Macbook Air M3 (8/256) 2024',
+            productDetails.product?.title ?? '',
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
@@ -116,20 +150,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildRatingAndReview() {
+  Widget _buildRatingAndReview(ProductDetailsModel productDetails) {
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        const Wrap(
+        Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.star,
               color: Colors.amber,
             ),
             Text(
-              '3',
-              style: TextStyle(
+              '${productDetails.product?.star}',
+              style: const TextStyle(
                 fontWeight: FontWeight.w500,
                 color: Colors.black54,
               ),
@@ -166,7 +200,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildPriceAndAddToCartSection() {
+  Widget _buildPriceAndAddToCartSection(ProductDetailsModel productDetails) {
     return Container(
       padding: const EdgeInsets.only(
         left: 24,
@@ -184,13 +218,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Price'),
+              const Text('Price'),
               Text(
-                '\$120',
-                style: TextStyle(
+                '\$${productDetails.product?.price}',
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: AppColors.themeColor,
