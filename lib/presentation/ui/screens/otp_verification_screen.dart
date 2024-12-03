@@ -1,12 +1,17 @@
+import 'package:ecommerce/presentation/state_holders/otp_verification_controller.dart';
 import 'package:ecommerce/presentation/ui/screens/complete_profile_screen.dart';
 import 'package:ecommerce/presentation/ui/utils/app_colors.dart';
+import 'package:ecommerce/presentation/ui/utils/snack_message.dart';
 import 'package:ecommerce/presentation/ui/widgets/app_logo_widget.dart';
+import 'package:ecommerce/presentation/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
-  const OtpVerificationScreen({super.key});
+  const OtpVerificationScreen({super.key, required this.email});
+
+  final String email;
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -14,6 +19,8 @@ class OtpVerificationScreen extends StatefulWidget {
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final TextEditingController _otpTEController = TextEditingController();
+  final OtpVerificationController _otpVerificationController =
+      Get.find<OtpVerificationController>();
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +69,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 appContext: context,
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _onTapNextButton,
-                child: const Text("Next"),
-              ),
+              GetBuilder<OtpVerificationController>(
+                  builder: (otpVerificationController) {
+                return Visibility(
+                  visible: !otpVerificationController.inProgress,
+                  replacement: const CenteredCircularProgressIndicator(),
+                  child: ElevatedButton(
+                    onPressed: _onTapNextButton,
+                    child: const Text("Next"),
+                  ),
+                );
+              }),
               const SizedBox(height: 16),
               RichText(
                 text: TextSpan(
@@ -94,8 +108,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     );
   }
 
-  void _onTapNextButton() {
-    Get.to(() => const CompleteProfileScreen());
+  Future<void> _onTapNextButton() async {
+    bool result = await _otpVerificationController.verifyOtp(
+        widget.email, _otpTEController.text);
+
+    if (result) {
+      Get.to(() => const CompleteProfileScreen());
+    } else {
+      if (mounted) {
+        showSnackBarMessage(context, _otpVerificationController.errorMessage!);
+      }
+    }
   }
 
   @override

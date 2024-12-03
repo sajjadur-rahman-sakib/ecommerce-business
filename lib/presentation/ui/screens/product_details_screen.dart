@@ -1,5 +1,7 @@
 import 'package:ecommerce/data/models/product_details_model.dart';
+import 'package:ecommerce/presentation/state_holders/auth_controller.dart';
 import 'package:ecommerce/presentation/state_holders/product_details_controller.dart';
+import 'package:ecommerce/presentation/ui/screens/email_verification_screen.dart';
 import 'package:ecommerce/presentation/ui/utils/app_colors.dart';
 import 'package:ecommerce/presentation/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:ecommerce/presentation/ui/widgets/product_image_slider.dart';
@@ -235,12 +237,23 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           SizedBox(
             width: 140,
             child: ElevatedButton(
-              onPressed: () {},
-              child: const Text('Add To Cart'),
+              onPressed: _onTapAddToCart,
+              child: const Text(
+                'Add To Cart',
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _onTapAddToCart() async {
+    bool isLoggedInUser = await Get.find<AuthController>().isLoggedInUser();
+
+    if (isLoggedInUser) {
+    } else {
+      Get.to(() => const EmailVerificationScreen());
+    }
   }
 }
