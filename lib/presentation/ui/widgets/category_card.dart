@@ -1,6 +1,8 @@
 import 'package:ecommerce/data/models/category_model.dart';
 import 'package:ecommerce/presentation/ui/screens/product_list_screen.dart';
-import 'package:ecommerce/presentation/ui/widgets/widgets.dart';
+import 'package:ecommerce/presentation/ui/utils/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CategoryCard extends StatelessWidget {
   const CategoryCard({
@@ -16,7 +18,7 @@ class CategoryCard extends StatelessWidget {
       onTap: () {
         Get.to(
           () => ProductListScreen(
-            categoryName: categoryModel.categoryName ?? '',
+            category: categoryModel,
           ),
         );
       },
@@ -25,13 +27,12 @@ class CategoryCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.themeColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.computer,
-              size: 48,
-              color: AppColors.themeColor,
+                color: AppColors.themeColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10)),
+            child: Image.network(
+              categoryModel.categoryImg ?? '',
+              width: 48,
+              height: 48,
             ),
           ),
           const SizedBox(height: 4),
