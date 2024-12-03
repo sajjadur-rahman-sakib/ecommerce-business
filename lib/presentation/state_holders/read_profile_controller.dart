@@ -1,40 +1,42 @@
 import 'package:ecommerce/data/models/network_response.dart';
 import 'package:ecommerce/data/services/network_caller.dart';
 import 'package:ecommerce/data/utils/urls.dart';
-import 'package:ecommerce/presentation/ui/widgets/widgets.dart';
+import 'package:get/get.dart';
 
-class OtpVerificationController extends GetxController {
+class ReadProfileController extends GetxController {
   bool _inProgress = false;
-  String? _errorMessage;
+
+  bool _isProfileCompleted = false;
 
   bool get inProgress => _inProgress;
 
+  bool get isProfileCompleted => _isProfileCompleted;
+
+  String? _errorMessage;
+
   String? get errorMessage => _errorMessage;
 
-  String _accessToken = '';
-
-  String get accessToken => _accessToken;
-
-  Future<bool> verifyOtp(String email, String otp) async {
+  Future<bool> getProfileDetails(String token) async {
     bool isSuccess = false;
     _inProgress = true;
     update();
-
     final NetworkResponse response = await Get.find<NetworkCaller>().getRequest(
-      url: Urls.verifyOtp(email, otp),
+      url: Urls.readProfile,
+      token: token,
     );
 
-    if (response.isSuccess && response.responseData['msg'] == 'success') {
-      _errorMessage = null;
-      _accessToken = response.responseData['data'];
+    if (response.isSuccess) {
+      if (response.responseData['data'] != null) {
+        _isProfileCompleted = true;
+      }
+
       isSuccess = true;
+      _errorMessage = null;
     } else {
       _errorMessage = response.errorMessage;
     }
-
     _inProgress = false;
     update();
-
     return isSuccess;
   }
 }
