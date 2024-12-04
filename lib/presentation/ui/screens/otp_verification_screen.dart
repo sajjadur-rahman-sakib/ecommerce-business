@@ -22,8 +22,9 @@ class OtpVerificationScreen extends StatefulWidget {
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final TextEditingController _otpTEController = TextEditingController();
   final OtpVerificationController _otpVerificationController =
-  Get.find<OtpVerificationController>();
-  final ReadProfileController _readProfileController = Get.find<ReadProfileController>();
+      Get.find<OtpVerificationController>();
+  final ReadProfileController _readProfileController =
+      Get.find<ReadProfileController>();
 
   @override
   Widget build(BuildContext context) {
@@ -37,21 +38,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               const AppLogoWidget(),
               Text(
                 "Enter OTP Code",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .headlineLarge,
+                style: Theme.of(context).textTheme.headlineLarge,
               ),
               const SizedBox(height: 8),
               Text(
                 "A 4 digit OTP code has been sent",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(
-                  color: Colors.black54,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.black54,
+                    ),
               ),
               const SizedBox(height: 24),
               PinCodeTextField(
@@ -81,26 +75,22 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               const SizedBox(height: 24),
               GetBuilder<OtpVerificationController>(
                   builder: (otpVerificationController) {
-                    return Visibility(
-                      visible: !otpVerificationController.inProgress,
-                      replacement: const CenteredCircularProgressIndicator(),
-                      child: ElevatedButton(
-                        onPressed: _onTapNextButton,
-                        child: const Text("Next"),
-                      ),
-                    );
-                  }),
+                return Visibility(
+                  visible: !otpVerificationController.inProgress,
+                  replacement: const CenteredCircularProgressIndicator(),
+                  child: ElevatedButton(
+                    onPressed: _onTapNextButton,
+                    child: const Text("Next"),
+                  ),
+                );
+              }),
               const SizedBox(height: 16),
               RichText(
                 text: TextSpan(
                   text: 'This code will expire in ',
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(
-                    color: Colors.grey,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Colors.grey,
+                      ),
                   children: const [
                     TextSpan(
                       text: '120s',
@@ -128,16 +118,19 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
     if (result) {
       final bool readProfileResult =
-      await _readProfileController.getProfileDetails(
+          await _readProfileController.getProfileDetails(
         _otpVerificationController.accessToken,
       );
 
       if (readProfileResult) {
-        if (_readProfileController
-            .isProfileCompleted) {
-          Get.offAll(() => const MainBottomNavScreen(),);
+        if (_readProfileController.isProfileCompleted) {
+          Get.offAll(
+            () => const MainBottomNavScreen(),
+          );
         } else {
-          Get.to(() => const CompleteProfileScreen(),);
+          Get.to(
+            () => const CompleteProfileScreen(),
+          );
         }
       } else {
         if (mounted) {

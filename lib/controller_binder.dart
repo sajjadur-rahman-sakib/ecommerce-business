@@ -20,7 +20,13 @@ class ControllerBinder extends Bindings {
   void dependencies() {
     Get.put(BottomNavBarController());
     Get.put(Logger());
-    Get.put(NetworkCaller(logger: Get.find<Logger>()));
+    Get.put(AuthController());
+    Get.put(
+      NetworkCaller(
+        logger: Get.find<Logger>(),
+        authController: Get.find<AuthController>(),
+      ),
+    );
     Get.put(SliderListController());
     Get.put(CategoryListController());
     Get.put(NewProductListController());
@@ -28,7 +34,7 @@ class ControllerBinder extends Bindings {
     Get.put(SpecialProductListController());
     Get.put(ProductListByCategoryController());
     Get.put(ProductDetailsController());
-    Get.put(AuthController());
+
     Get.put(EmailVerificationController());
     Get.put(OtpVerificationController());
     Get.put(ReadProfileController());

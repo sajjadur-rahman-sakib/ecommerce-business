@@ -2,13 +2,17 @@ import 'dart:convert';
 
 import 'package:ecommerce/data/models/network_response.dart';
 import 'package:ecommerce/presentation/state_holders/auth_controller.dart';
+import 'package:ecommerce/presentation/ui/screens/email_verification_screen.dart';
+import 'package:get/get.dart' as getx;
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
+import 'package:logger/web.dart';
 
 class NetworkCaller {
   final Logger logger;
+  final AuthController authController;
 
-  NetworkCaller({required this.logger});
+  NetworkCaller({required this.logger, required this.authController});
 
   Future<NetworkResponse> getRequest(
       {required String url, String? token}) async {
@@ -23,22 +27,28 @@ class NetworkCaller {
             url, response.statusCode, response.body, response.headers, true);
         final decodedBody = jsonDecode(response.body);
         return NetworkResponse(
-          statusCode: response.statusCode,
           isSuccess: true,
+          statusCode: response.statusCode,
           responseData: decodedBody,
         );
       } else {
         _responseLog(
             url, response.statusCode, response.body, response.headers, false);
+        if (response.statusCode == 401) {
+          _moveToLogin();
+        }
         return NetworkResponse(
+          isSuccess: false,
           statusCode: response.statusCode,
-          isSuccess: true,
         );
       }
     } catch (e) {
       _responseLog(url, -1, null, {}, false, e);
       return NetworkResponse(
-          statusCode: -1, isSuccess: false, errorMessage: e.toString());
+        isSuccess: false,
+        statusCode: -1,
+        errorMessage: e.toString(),
+      );
     }
   }
 
@@ -46,12 +56,7 @@ class NetworkCaller {
       {required String url, Map<String, dynamic>? body}) async {
     try {
       Uri uri = Uri.parse(url);
-      _requestLog(
-        url,
-        {},
-        body ?? {},
-        '',
-      );
+      _requestLog(url, {}, body ?? {}, AuthController.accessToken ?? '');
       final Response response = await post(
         uri,
         headers: {
@@ -60,58 +65,62 @@ class NetworkCaller {
         },
         body: jsonEncode(body),
       );
+
       if (response.statusCode == 200) {
         _responseLog(
             url, response.statusCode, response.body, response.headers, true);
         final decodedBody = jsonDecode(response.body);
         return NetworkResponse(
-          statusCode: response.statusCode,
           isSuccess: true,
+          statusCode: response.statusCode,
           responseData: decodedBody,
         );
       } else {
         _responseLog(
             url, response.statusCode, response.body, response.headers, false);
+        if (response.statusCode == 401) {
+          _moveToLogin();
+        }
         return NetworkResponse(
+          isSuccess: false,
           statusCode: response.statusCode,
-          isSuccess: true,
         );
       }
     } catch (e) {
       _responseLog(url, -1, null, {}, false, e);
       return NetworkResponse(
-          statusCode: -1, isSuccess: true, errorMessage: e.toString());
+        isSuccess: false,
+        statusCode: -1,
+        errorMessage: e.toString(),
+      );
     }
   }
 
-  void _requestLog(
-    String url,
-    Map<String, dynamic> params,
-    Map<String, dynamic> body,
-    String token,
-  ) {
+  Future<void> _moveToLogin() async {
+    await authController.clearUserData();
+    getx.Get.to(() => const EmailVerificationScreen());
+  }
+
+  void _requestLog(String url, Map<String, dynamic> params,
+      Map<String, dynamic> body, String token) {
     logger.i('''
-      
-      Url: $url
-      Params: $params
-      Body: $body
-      Token: $token
-      
-      ''');
+    Url: $url
+    Params: $params
+    Body: $body,
+    Token: $token
+    ''');
   }
 
   void _responseLog(String url, int statusCode, dynamic responseBody,
       Map<String, dynamic> headers, bool isSuccess,
       [dynamic error]) {
     String message = '''
-      
-      Url: $url
-      Status Code: $statusCode
-      Headers: $headers
-      Response Body: $responseBody
-      Error: $error
-      
-      ''';
+    Url: $url
+    Status Code: $statusCode
+    Headers: $headers,
+    Response Body: $responseBody,
+    Error: $error,
+    ''';
     if (isSuccess) {
       logger.i(message);
     } else {
