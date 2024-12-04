@@ -1,3 +1,4 @@
+import 'package:ecommerce/presentation/state_holders/auth_controller.dart';
 import 'package:ecommerce/presentation/ui/screens/main_bottom_nav_screen.dart';
 import 'package:ecommerce/presentation/ui/widgets/app_logo_widget.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   Future<void> _moveToNextScreen() async {
     await Future.delayed(const Duration(seconds: 2));
+    await Get.find<AuthController>().getAccessToken();
     Get.off(() => const MainBottomNavScreen());
   }
 

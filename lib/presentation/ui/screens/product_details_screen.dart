@@ -1,8 +1,10 @@
 import 'package:ecommerce/data/models/product_details_model.dart';
+import 'package:ecommerce/presentation/state_holders/add_to_cart_controller.dart';
 import 'package:ecommerce/presentation/state_holders/auth_controller.dart';
 import 'package:ecommerce/presentation/state_holders/product_details_controller.dart';
 import 'package:ecommerce/presentation/ui/screens/email_verification_screen.dart';
 import 'package:ecommerce/presentation/ui/utils/app_colors.dart';
+import 'package:ecommerce/presentation/ui/utils/snack_message.dart';
 import 'package:ecommerce/presentation/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:ecommerce/presentation/ui/widgets/product_image_slider.dart';
 import 'package:ecommerce/presentation/ui/widgets/size_picker.dart';
@@ -20,6 +22,10 @@ class ProductDetailsScreen extends StatefulWidget {
 }
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  String _selectedColor = '';
+  String _selectedSize = '';
+  int quantity = 1;
+
   @override
   void initState() {
     super.initState();
@@ -33,44 +39,44 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         title: const Text('Product Details'),
       ),
       body: GetBuilder<ProductDetailsController>(
-        builder: (productDetailsController) {
-          if (productDetailsController.inProgress) {
-            return const CenteredCircularProgressIndicator();
-          }
+          builder: (productDetailsController) {
+        if (productDetailsController.inProgress) {
+          return const CenteredCircularProgressIndicator();
+        }
 
-          if (productDetailsController.errorMessage != null) {
-            return Center(
-              child: Text(productDetailsController.errorMessage!),
-            );
-          }
-
-          return Column(
-            children: [
-              Expanded(
-                child: _buildProductDetails(
-                  productDetailsController.product!,
-                ),
-              ),
-              _buildPriceAndAddToCartSection(
-                productDetailsController.product!,
-              ),
-            ],
+        if (productDetailsController.errorMessage != null) {
+          return Center(
+            child: Text(productDetailsController.errorMessage!),
           );
-        },
-      ),
+        }
+
+        return Column(
+          children: [
+            Expanded(
+              child: _buildProductDetails(productDetailsController.product!),
+            ),
+            _buildPriceAndAddToCartSection(productDetailsController.product!)
+          ],
+        );
+      }),
     );
   }
 
-  Widget _buildProductDetails(ProductDetailsModel productDetails) {
+  Widget _buildProductDetails(ProductDetailsModel product) {
+    List<String> colors = product.color!.split(',');
+    List<String> sizes = product.size!.split(',');
+    _selectedColor = colors.first;
+    _selectedSize = sizes.first;
+
     return SingleChildScrollView(
       child: Column(
         children: [
           ProductImageSlider(
             sliderUrls: [
-              productDetails.img1!,
-              productDetails.img2!,
-              productDetails.img3!,
-              productDetails.img4!,
+              product.img1!,
+              product.img2!,
+              product.img3!,
+              product.img4!,
             ],
           ),
           Padding(
@@ -78,31 +84,34 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildNameAndSpecification(productDetails),
+                _buildNameAndQuantitySection(product),
                 const SizedBox(height: 4),
-                _buildRatingAndReview(productDetails),
+                _buildRatingAndReviewSection(product),
                 const SizedBox(height: 8),
                 // ColorPicker(
                 //   colors: const [
                 //     Colors.red,
                 //     Colors.green,
-                //     Colors.blue,
+                //     Colors.yellow,
                 //     Colors.black,
-                //     Colors.white,
                 //   ],
                 //   onColorSelected: (color) {},
                 // ),
                 SizePicker(
-                  sizes: productDetails.color!.split(','),
-                  onSizeSelected: (String selectedSize) {},
-                ),
-                const SizedBox(height: 8),
-                SizePicker(
-                  sizes: productDetails.size!.split(','),
-                  onSizeSelected: (String selectedSize) {},
+                  sizes: colors,
+                  onSizeSelected: (String selectedColor) {
+                    _selectedColor = selectedColor;
+                  },
                 ),
                 const SizedBox(height: 16),
-                _buildDescriptionSection(productDetails),
+                SizePicker(
+                  sizes: sizes,
+                  onSizeSelected: (String selectedSize) {
+                    _selectedSize = selectedSize;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildDescriptionSection(product)
               ],
             ),
           ),
@@ -119,9 +128,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           'Description',
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        const SizedBox(
-          height: 8,
-        ),
+        const SizedBox(height: 8),
         Text(
           productDetails.product?.shortDes ?? '',
           style: const TextStyle(color: Colors.black45),
@@ -130,7 +137,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildNameAndSpecification(ProductDetailsModel productDetails) {
+  Widget _buildNameAndQuantitySection(ProductDetailsModel productDetails) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -141,34 +148,32 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ),
         ),
         ItemCount(
-          initialValue: 1,
+          initialValue: quantity,
           minValue: 1,
           maxValue: 20,
           decimalPlaces: 0,
           color: AppColors.themeColor,
-          onChanged: (value) {},
+          onChanged: (value) {
+            quantity = value.toInt();
+            setState(() {});
+          },
         ),
       ],
     );
   }
 
-  Widget _buildRatingAndReview(ProductDetailsModel productDetails) {
+  Widget _buildRatingAndReviewSection(ProductDetailsModel productDetails) {
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            const Icon(
-              Icons.star,
-              color: Colors.amber,
-            ),
+            const Icon(Icons.star, color: Colors.amber),
             Text(
-              '${productDetails.product?.star}',
+              '${productDetails.product?.star ?? ''}',
               style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.black54,
-              ),
+                  fontWeight: FontWeight.w500, color: Colors.black54),
             ),
           ],
         ),
@@ -178,45 +183,35 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           child: const Text(
             'Reviews',
             style: TextStyle(
-              fontWeight: FontWeight.w500,
-              color: AppColors.themeColor,
-            ),
+                fontWeight: FontWeight.w500, color: AppColors.themeColor),
           ),
         ),
         const SizedBox(width: 8),
         Card(
           color: AppColors.themeColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
           child: const Padding(
-            padding: EdgeInsets.all(4),
+            padding: EdgeInsets.all(4.0),
             child: Icon(
               Icons.favorite_outline_rounded,
               size: 16,
               color: Colors.white,
             ),
           ),
-        ),
+        )
       ],
     );
   }
 
   Widget _buildPriceAndAddToCartSection(ProductDetailsModel productDetails) {
     return Container(
-      padding: const EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 16,
-        bottom: 16,
-      ),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.themeColor.withOpacity(0.1),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(8),
-          topRight: Radius.circular(8),
-        ),
-      ),
+          color: AppColors.themeColor.withOpacity(0.1),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(8),
+            topRight: Radius.circular(8),
+          )),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -227,31 +222,51 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               Text(
                 '\$${productDetails.product?.price}',
                 style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.themeColor,
-                ),
-              ),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.themeColor),
+              )
             ],
           ),
           SizedBox(
             width: 140,
-            child: ElevatedButton(
-              onPressed: _onTapAddToCart,
-              child: const Text(
-                'Add To Cart',
-              ),
-            ),
-          ),
+            child:
+                GetBuilder<AddToCartController>(builder: (addToCartController) {
+              return Visibility(
+                visible: !addToCartController.inProgress,
+                replacement: const CenteredCircularProgressIndicator(),
+                child: ElevatedButton(
+                  onPressed: _onTapAddToCart,
+                  child: const Text('Add To Cart'),
+                ),
+              );
+            }),
+          )
         ],
       ),
     );
   }
 
   Future<void> _onTapAddToCart() async {
-    bool isLoggedInUser = await Get.find<AuthController>().isLoggedInUser();
-
+    bool isLoggedInUser = Get.find<AuthController>().isLoggedInUser();
     if (isLoggedInUser) {
+      AuthController.accessToken;
+      final result = await Get.find<AddToCartController>().addToCart(
+        widget.productId,
+        _selectedColor,
+        _selectedSize,
+        quantity,
+      );
+      if (result) {
+        if (mounted) {
+          showSnackBarMessage(context, 'Added to cart');
+        }
+      } else {
+        if (mounted) {
+          showSnackBarMessage(
+              context, Get.find<AddToCartController>().errorMessage!, true);
+        }
+      }
     } else {
       Get.to(() => const EmailVerificationScreen());
     }

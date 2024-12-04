@@ -1,4 +1,5 @@
 import 'package:ecommerce/data/services/network_caller.dart';
+import 'package:ecommerce/presentation/state_holders/add_to_cart_controller.dart';
 import 'package:ecommerce/presentation/state_holders/auth_controller.dart';
 import 'package:ecommerce/presentation/state_holders/bottom_nav_bar_controller.dart';
 import 'package:ecommerce/presentation/state_holders/category_list_controller.dart';
@@ -31,5 +32,6 @@ class ControllerBinder extends Bindings {
     Get.put(EmailVerificationController());
     Get.put(OtpVerificationController());
     Get.put(ReadProfileController());
+    Get.put(AddToCartController());
   }
 }

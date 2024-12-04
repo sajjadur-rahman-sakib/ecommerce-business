@@ -32,41 +32,47 @@ class _MainBottomNavScreenState extends State<MainBottomNavScreen> {
   @override
   void initState() {
     super.initState();
-    Get.find<SliderListController>().getSliderList();
-    Get.find<CategoryListController>().getCategoryList();
-    Get.find<NewProductListController>().getNewProductList();
-    Get.find<PopularProductListController>().getPopularProductList();
-    Get.find<SpecialProductListController>().getSpecialProductList();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        Get.find<SliderListController>().getSliderList();
+        Get.find<CategoryListController>().getCategoryList();
+        Get.find<NewProductListController>().getNewProductList();
+        Get.find<PopularProductListController>().getPopularProductList();
+        Get.find<SpecialProductListController>().getSpecialProductList();
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<BottomNavBarController>(builder: (_) {
-      return Scaffold(
-        body: _screens[_navBarController.selectedIndex],
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _navBarController.selectedIndex,
-          onDestinationSelected: _navBarController.changeIndex,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.category_outlined),
-              label: 'Category',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.shopping_cart),
-              label: 'Cart',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.favorite_border),
-              label: 'Wishlist',
-            ),
-          ],
-        ),
-      );
-    });
+    return GetBuilder<BottomNavBarController>(
+      builder: (_) {
+        return Scaffold(
+          body: _screens[_navBarController.selectedIndex],
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: _navBarController.selectedIndex,
+            onDestinationSelected: _navBarController.changeIndex,
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.category_outlined),
+                label: 'Category',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.shopping_cart),
+                label: 'Cart',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.favorite_border),
+                label: 'Wishlist',
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ecommerce/data/models/network_response.dart';
+import 'package:ecommerce/presentation/state_holders/auth_controller.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 
@@ -15,7 +16,7 @@ class NetworkCaller {
       Uri uri = Uri.parse(url);
       _requestLog(url, {}, {}, '');
       final Response response = await get(uri, headers: {
-        'token': '$token',
+        'token': '${token ?? AuthController.accessToken}',
       });
       if (response.statusCode == 200) {
         _responseLog(
@@ -53,7 +54,10 @@ class NetworkCaller {
       );
       final Response response = await post(
         uri,
-        headers: {'token': '', 'content-type': 'application/json'},
+        headers: {
+          'token': '${AuthController.accessToken}',
+          'content-type': 'application/json',
+        },
         body: jsonEncode(body),
       );
       if (response.statusCode == 200) {
