@@ -23,6 +23,7 @@ dependencies:
   http: ^1.2.2
   logger: ^2.5.0
   shared_preferences: ^2.3.3
+  webview_flutter: ^4.10.0
 
 
 dev_dependencies:

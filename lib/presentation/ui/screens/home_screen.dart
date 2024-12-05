@@ -3,6 +3,7 @@ import 'package:ecommerce/presentation/state_holders/category_list_controller.da
 import 'package:ecommerce/presentation/state_holders/new_product_list_controller.dart';
 import 'package:ecommerce/presentation/state_holders/popular_product_list_controller.dart';
 import 'package:ecommerce/presentation/state_holders/special_product_list_controller.dart';
+import 'package:ecommerce/presentation/ui/screens/payment_details_screen.dart';
 import 'package:ecommerce/presentation/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:ecommerce/presentation/ui/widgets/widgets.dart';
 
@@ -150,7 +151,11 @@ class _HomeScreenState extends State<HomeScreen> {
       centerTitle: false,
       actions: [
         AppBarIconButton(
-          onTap: () {},
+          onTap: () {
+            Get.to(
+              () => const PaymentDetailsScreen(),
+            );
+          },
           iconData: Icons.person,
         ),
         const SizedBox(width: 8),

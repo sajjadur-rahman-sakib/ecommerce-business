@@ -1,4 +1,5 @@
 import 'package:ecommerce/presentation/state_holders/bottom_nav_bar_controller.dart';
+import 'package:ecommerce/presentation/ui/screens/payment_details_screen.dart';
 import 'package:ecommerce/presentation/ui/utils/app_colors.dart';
 import 'package:ecommerce/presentation/ui/widgets/cart/cart_item_widget.dart';
 import 'package:flutter/material.dart';
@@ -77,13 +78,17 @@ class CartScreen extends StatelessWidget {
           SizedBox(
             width: 140,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: _onTapCheckoutButton,
               child: const Text('Checkout'),
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _onTapCheckoutButton() {
+    Get.to(() => const PaymentDetailsScreen());
   }
 
   void backToHome() {
